@@ -82,7 +82,7 @@
     {% if consul_tls_enable | bool %}
     "ca_file": "{{ consul_tls_dir }}/{{ consul_tls_ca_crt | basename }}",
     "cert_file": "{{ consul_tls_dir }}/{{ consul_tls_server_crt | basename }}",
-    "key_file": "{{ consul_tls_dir }}/{{ consul_server_key | basename }}",
+    "key_file": "{{ consul_tls_dir }}/{{ consul_tls_server_key | basename }}",
     "verify_incoming": {{ consul_tls_verify_incoming | bool | to_json }},
     "verify_outgoing": {{ consul_tls_verify_outgoing | bool | to_json }},
     "verify_incoming_https": {{consul_tls_verify_incoming_https | bool| to_json }},
@@ -99,15 +99,26 @@
     "retry_max": {{ consul_retry_max | int }},
 
     "retry_join":
-    {% if not consul_retry_join_skip_hosts %}
-      {% for server in _consul_lan_servers %}
-      {%   set _ = consul_join.append(hostvars[server]['consul_advertise_address'] | default(hostvars[server]['consul_bind_address']) | default(hostvars[server]['ansible_default_ipv4']['address']) | mandatory) %}
-      {% endfor %}
-    {% endif %}
+    {% if not consul_cloud_autodiscovery %}
+        {% if not consul_retry_join_skip_hosts %}
+            {% for server in _consul_lan_servers %}
+            {%   set _ = consul_join.append(hostvars[server]['consul_advertise_address'] | default(hostvars[server]['consul_bind_address']) | default(hostvars[server]['ansible_default_ipv4']['address']) | mandatory) %}
+            {% endfor %}
+        {% endif %}
     {{ consul_join | map('ipwrap') | list | to_json }},
+    {% else %}
+    ["{{ consul_cloud_autodiscovery_string }}"],
+    {% endif %}
 
     {## Server/Client ##}
     "server": {{ (item.config_version != 'client') | bool | to_json }},
+
+    {## Enable Connect on Server ##}
+    {% if (item.config_version == 'server') and consul_connect_enabled %}
+    "connect": {
+        "enabled": true
+    },
+    {% endif %}
 
     {# Client Settings #}
     {% if (item.config_version == 'client') %}

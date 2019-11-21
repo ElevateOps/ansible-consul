@@ -7,7 +7,7 @@ is_virtualenv: "{{ lookup('env','VIRTUAL_ENV') | default('', true) }}"
 consul_install_dependencies: true
 
 ### Package
-consul_version: "{{ lookup('env','CONSUL_VERSION') | default('1.6.1', true) }}"
+consul_version: "{{ lookup('env','CONSUL_VERSION') | default('1.6.2', true) }}"
 consul_architecture_map:
   # this first entry seems redundant
   # (but it's required for reasons)
@@ -73,7 +73,7 @@ consul_iface: "\
   {% else %}\
     {{ lookup('env','CONSUL_IFACE') | default(ansible_default_ipv4.interface, true) }}\
   {% endif %}"
-consul_node_name: "{{ inventory_hostname_short }}"
+consul_node_name: "{{ ansible_hostname }}"
 consul_node_role: "{{ lookup('env','CONSUL_NODE_ROLE') | default('client', true) }}"
 consul_recursors: "{{ lookup('env','CONSUL_RECURSORS') | default('[]', true) }}"
 consul_bootstrap_expect: "{{ lookup('env','CONSUL_BOOTSTRAP_EXPECT') | default(false, true) }}"
@@ -106,6 +106,12 @@ consul_autopilot_server_stabilization_time: "{{ lookup('env', 'CONSUL_AUTOPILOT_
 consul_autopilot_redundancy_zone_tag: "{{ lookup('env', 'CONSUL_AUTOPILOT_REDUNDANCY_ZONE_TAG') | default('az', true) }}"
 consul_autopilot_disable_upgrade_migration: "{{ lookup('env', 'CONSUL_AUTOPILOT_DISABLE_UPGRADE_MIGRATION') | default(false, true) }}"
 consul_autopilot_upgrade_version_tag: "{{ lookup('env', 'CONSUL_AUTOPILOT_UPGRADE_VERSION_TAG') | default('', true) }}"
+
+### Cloud auto discovery settings
+consul_cloud_autodiscovery: false
+consul_cloud_autodiscovery_provider: ""
+consul_cloud_autodiscovery_params: ""
+consul_cloud_autodiscovery_string: "provider={{ consul_cloud_autodiscovery_provider }} {{ consul_cloud_autodiscovery_params }}"
 
 ### Addresses
 consul_bind_address: "\
@@ -188,7 +194,7 @@ consul_tls_dir: "{{ lookup('env','CONSUL_TLS_DIR') | default('/etc/consul/ssl', 
 
 consul_tls_ca_crt: "{{ lookup('env','CONSUL_TLS_CA_CRT') | default('ca.crt', true) }}"
 consul_tls_server_crt: "{{ lookup('env','CONSUL_SERVER_CRT') | default('server.crt', true) }}"
-consul_server_key: "{{ lookup('env','CONSUL_SERVER_KEY') | default('server.key', true) }}"
+consul_tls_server_key: "{{ lookup('env','CONSUL_SERVER_KEY') | default('server.key', true) }}"
 consul_tls_copy_keys: true
 consul_tls_verify_incoming: false
 consul_tls_verify_outgoing: true
@@ -240,3 +246,6 @@ consul_snapshot_stale: false
 
 # services
 consul_services: []
+
+# enable Consul Connect
+consul_connect_enabled: false

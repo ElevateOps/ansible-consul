@@ -26,7 +26,7 @@ This role requires a FreeBSD, Debian, or Red Hat Enterprise Linux distribution o
 
 The role might work with other OS distributions and versions, but is known to function well with the following software versions:
 
-* Consul: 1.6.1
+* Consul: 1.6.2
 * Ansible: 2.8.2
 * Alpine Linux: 3.8
 * CentOS: 7
@@ -64,7 +64,7 @@ Many role variables can also take their values from environment variables as wel
 ### `consul_version`
 
 - Version to install
-- Default value: 1.6.1
+- Default value: 1.6.2
 
 ### `consul_architecture_map`
 
@@ -524,7 +524,7 @@ Notice that the dict object has to use precisely the names stated in the documen
   - Override with `CONSUL_TLS_SERVER_CRT` environment variable
 - Default value: `server.crt`
 
-### `consul_server_key`
+### `consul_tls_server_key`
 
 - Server key
   - Override with `CONSUL_TLS_SERVER_KEY` environment variable
@@ -1050,6 +1050,11 @@ consul3.node.consul.  0 IN  A 10.1.42.230
 - Custom list of addresses to listen on.
 - Default value: *[]*
 
+### `consul_connect_enabled`
+
+- Enable Consul Connect feature on servers
+- Default value: false
+
 ### iptables DNS Forwarding Support
 
 This role can also use iptables instead of Dnsmasq for forwarding DNS queries to Consul. You can enable it like this:
@@ -1070,7 +1075,7 @@ By default these are named:
 
 - `ca.crt` (can be overridden by {{ consul_tls_ca_crt }})
 - `server.crt` (can be overridden by {{ consul_tls_server_crt }})
-- `server.key` (can be overridden by {{ consul_server_key }})
+- `server.key` (can be overridden by {{ consul_tls_server_key }})
 
 Then either set the environment variable `CONSUL_TLS_ENABLE=true` or use the Ansible variable `consul_tls_enable=true` at role runtime.
 
